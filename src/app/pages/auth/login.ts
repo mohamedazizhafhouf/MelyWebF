@@ -8,14 +8,13 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-login',
     standalone: true,
     providers: [MessageService],
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, ToastModule],
     templateUrl: './login.html'
 })
 export class Login {

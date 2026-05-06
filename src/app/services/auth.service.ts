@@ -1,41 +1,66 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, LoginRequest, RegisterRequest } from '../core/models/auth.model';
+import { LoginRequest, LoginResponse, RegisterRequest, RegistrationResponse, StoredSession } from '../core/models/auth.model';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:3001/api/auth';
+    private readonly apiUrl = 'http://localhost:8090/api/v1/auth';
+    private readonly storageKey = 'mely_auth_session';
 
-  constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {}
 
-  register(data: RegisterRequest): Observable<any> {
-        console.log('Inside the auth service inside register function', data);
+    register(data: RegisterRequest): Observable<RegistrationResponse> {
+        return this.http.post<RegistrationResponse>(`${this.apiUrl}/register`, data);
+    }
 
-    return this.http.post(`${this.API_URL}/register`, data);
-  }
+    login(credentials: LoginRequest): Observable<LoginResponse> {
+        return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
+            tap((response) => this.storeSession(response))
+        );
+    }
 
-  login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials).pipe(
-      tap(res => {
-        if (res.token) {
-          localStorage.setItem('recouvra_token', res.token);
+    logout(): void {
+        localStorage.removeItem(this.storageKey);
+    }
+
+    isLoggedIn(): boolean {
+        return !!this.getToken();
+    }
+
+    isSaasUserSession(): boolean {
+        return this.getSession()?.accountType === 'SAAS';
+    }
+
+    getToken(): string | null {
+        return this.getSession()?.token ?? null;
+    }
+
+    getSession(): StoredSession | null {
+        const rawSession = localStorage.getItem(this.storageKey);
+        if (!rawSession) {
+            return null;
         }
-      })
-    );
-  }
 
-  logout(): void {
-    localStorage.removeItem('recouvra_token');
-  }
+        try {
+            return JSON.parse(rawSession) as StoredSession;
+        } catch {
+            this.logout();
+            return null;
+        }
+    }
 
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('recouvra_token');
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem('recouvra_token');
-  }
+    private storeSession(response: LoginResponse): void {
+        const session: StoredSession = {
+            token: response.token,
+            tokenType: response.tokenType,
+            email: response.email,
+            role: response.role,
+            organizationId: response.organizationId,
+            accountType: response.accountType
+        };
+        localStorage.setItem(this.storageKey, JSON.stringify(session));
+    }
 }
