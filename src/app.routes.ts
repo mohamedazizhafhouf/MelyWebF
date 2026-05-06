@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { authChildGuard } from './app/core/guards/auth.guard';
+import { guestGuard } from './app/core/guards/guest.guard';
 import { AppLayout } from './app/layout/component/app.layout';
 import { Dashboard } from './app/pages/dashboard/dashboard';
 import { Documentation } from './app/pages/documentation/documentation';
@@ -9,6 +11,7 @@ export const appRoutes: Routes = [
     {
         path: '',
         component: AppLayout,
+        canActivateChild: [authChildGuard],
         children: [
             { path: '', component: Dashboard },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
@@ -18,6 +21,6 @@ export const appRoutes: Routes = [
     },
     { path: 'landing', component: Landing },
     { path: 'notfound', component: Notfound },
-    { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
+    { path: 'auth', canActivate: [guestGuard], loadChildren: () => import('./app/pages/auth/auth.routes') },
     { path: '**', redirectTo: '/notfound' }
 ];

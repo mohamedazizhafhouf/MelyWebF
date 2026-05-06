@@ -1,0 +1,45 @@
+<p-toast></p-toast>
+<div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-screen overflow-hidden">
+    <div class="flex flex-col items-center justify-center">
+        <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, #0f766e 10%, rgba(15, 118, 110, 0.05) 35%)">
+            <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20 auth-card" style="border-radius: 53px">
+                <div class="text-center mb-8">
+                    <div class="mely-badge mb-6 mx-auto">Mely</div>
+                    <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Create your personal Mely account</div>
+                    <span class="text-muted-color font-medium">Build healthier money habits with a personal finance experience shaped by Islamic values.</span>
+                </div>
+
+                <div class="flex flex-wrap gap-6 mb-6">
+                    <div class="flex flex-col grow basis-0 gap-2">
+                        <label for="mely-first-name">First Name</label>
+                        <input pInputText id="mely-first-name" type="text" placeholder="First name" [(ngModel)]="firstName" />
+                    </div>
+                    <div class="flex flex-col grow basis-0 gap-2">
+                        <label for="mely-last-name">Last Name</label>
+                        <input pInputText id="mely-last-name" type="text" placeholder="Last name" [(ngModel)]="lastName" />
+                    </div>
+                </div>
+
+                <label for="mely-register-email" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
+                <input pInputText id="mely-register-email" type="email" placeholder="you@example.com" class="w-full md:w-120 mb-6" [(ngModel)]="email" />
+
+                <label for="mely-register-password" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
+                <p-password id="mely-register-password" [(ngModel)]="password" placeholder="Create a password" styleClass="mb-4" [fluid]="true" [toggleMask]="true"></p-password>
+
+                <label for="mely-register-confirm-password" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Confirm Password</label>
+                <p-password id="mely-register-confirm-password" [(ngModel)]="confirmPassword" placeholder="Repeat your password" styleClass="mb-6" [fluid]="true" [toggleMask]="true" [feedback]="false"></p-password>
+
+                <div class="text-sm text-muted-color mb-6">
+                    Your account is created as a personal Mely user so you can manage your finances.
+                </div>
+
+                <p-button [label]="isSubmitting ? 'Creating Account...' : 'Create Account'" styleClass="w-full mb-4" [disabled]="isSubmitting" (click)="onRegister()"></p-button>
+
+                <div class="text-center text-sm">
+                    Already have an account?
+                    <a routerLink="/auth/login" class="font-medium text-primary no-underline ml-1">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
