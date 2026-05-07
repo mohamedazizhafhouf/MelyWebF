@@ -1,0 +1,332 @@
+<p-toast />
+
+<div class="wealth-page">
+    <section class="wealth-hero">
+        <div class="wealth-hero__glow" aria-hidden="true"></div>
+        <div class="wealth-hero__grid">
+            <div>
+                <p class="wealth-eyebrow">Mely · Islamic value-driven finance</p>
+                <h1 class="wealth-title">Wealth command center</h1>
+                <p class="wealth-lead">
+                    Track zakatable assets, monthly cash flow, budgets, and halāl savings scenarios — one calm surface built for clarity, not noise.
+                </p>
+                <div class="wealth-hero__actions">
+                    <button pButton type="button" label="Refresh data" icon="pi pi-refresh" (click)="refreshAll()" [loading]="busy()" [rounded]="true"></button>
+                    <button pButton type="button" label="Run Zakat snapshot" icon="pi pi-sparkles" class="p-button-outlined" (click)="runPortfolioZakat()" [rounded]="true"></button>
+                    <a pButton routerLink="/currency" label="Currency converter" icon="pi pi-dollar" class="p-button-outlined" [rounded]="true"></a>
+                </div>
+            </div>
+            <div class="wealth-hero__panel">
+                <div class="wealth-mini-kpi">
+                    <span class="label">Month</span>
+                    <input
+                        class="wealth-month-input"
+                        type="month"
+                        [ngModel]="yearMonth()"
+                        (ngModelChange)="yearMonth.set($event); onYearMonthChange()"
+                    />
+                </div>
+                @if (summary(); as s) {
+                    <div class="wealth-stat-grid">
+                        <div>
+                            <div class="stat-label">Income</div>
+                            <div class="stat-value text-emerald-400">{{ num(s.totalIncome) | number: '1.0-0' }}</div>
+                        </div>
+                        <div>
+                            <div class="stat-label">Expenses</div>
+                            <div class="stat-value text-rose-300">{{ num(s.totalExpense) | number: '1.0-0' }}</div>
+                        </div>
+                        <div class="span-2">
+                            <div class="stat-label">Net cash flow</div>
+                            <div class="stat-value" [class.text-sky-300]="num(s.netCashFlow) >= 0" [class.text-amber-200]="num(s.netCashFlow) < 0">
+                                {{ num(s.netCashFlow) | number: '1.0-0' }}
+                            </div>
+                        </div>
+                    </div>
+                } @else {
+                    <p class="text-sm text-white/70 m-0">Sign in as an individual account to load your private ledger.</p>
+                }
+            </div>
+        </div>
+    </section>
+
+    <nav class="wealth-tabs" aria-label="Wealth sections">
+        @for (t of tabs; track t.id) {
+            <button
+                type="button"
+                class="wealth-tab"
+                [class.wealth-tab--active]="activeTab() === t.id"
+                (click)="setTab(t.id)"
+            >
+                <i [class]="t.icon"></i>
+                <span class="wealth-tab__label">{{ t.label }}</span>
+                <span class="wealth-tab__blurb">{{ t.blurb }}</span>
+            </button>
+        }
+    </nav>
+
+    <div class="wealth-body">
+        @if (activeTab() === 'overview') {
+            <div class="bento">
+                <div class="bento__main card wealth-card">
+                    <div class="flex items-center justify-between gap-4 mb-4">
+                        <div>
+                            <h2 class="text-xl font-semibold m-0">Spending mix</h2>
+                            <p class="text-muted-color text-sm m-0">Expense categories for {{ yearMonth() }}</p>
+                        </div>
+                    </div>
+                    <div class="chart-wrap doughnut">
+                        @if (summary()?.expenseByCategory?.length) {
+                            <p-chart type="doughnut" [data]="expenseChartData()" [options]="expenseChartOptions" />
+                        } @else {
+                            <div class="empty-chart">Add expenses in <strong>Cash flow</strong> to see your wheel.</div>
+                        }
+                    </div>
+                </div>
+                <div class="bento__side">
+                    <div class="card wealth-card hawl-card mb-4">
+                        <h3 class="text-lg font-semibold mt-0 mb-2">Ḥawl tracker</h3>
+                        @if (hawl(); as h) {
+                            <p class="text-sm text-muted-color m-0 mb-3">Lunar-year awareness for zakatable wealth.</p>
+                            <ul class="hawl-list">
+                                <li><span>Started</span><strong>{{ h.hawlStartDate }}</strong></li>
+                                <li><span>Days remaining</span><strong>{{ h.daysRemaining ?? '—' }}</strong></li>
+                                <li><span>Completed</span><strong>{{ h.hawlCompleted ? 'Yes' : 'No' }}</strong></li>
+                            </ul>
+                        } @else {
+                            <p class="text-sm text-muted-color">No ḥawl record yet.</p>
+                            <button pButton type="button" label="Enable Zakat tracking" class="p-button-sm mt-2" (click)="enableZakatTracking()"></button>
+                        }
+                    </div>
+                    <div class="card wealth-card">
+                        <h3 class="text-lg font-semibold mt-0 mb-2">Portfolio Zakat</h3>
+                        @if (zakatCalc(); as z) {
+                            <p class="text-sm m-0 mb-2">{{ z.message }}</p>
+                            <p-tag [value]="z.zakatStatus ?? '—'" severity="info" />
+                        } @else {
+                            <p class="text-sm text-muted-color m-0">Run a snapshot after adding assets.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (activeTab() === 'zakat') {
+            <div class="card wealth-card">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <div>
+                        <h2 class="text-xl font-semibold m-0">Zakat-tracked assets</h2>
+                        <p class="text-muted-color text-sm m-0">Values feed niṣāb checks — educational, not a fatwa.</p>
+                    </div>
+                    <button pButton type="button" label="Add asset" icon="pi pi-plus" (click)="openNewAsset()" [rounded]="true"></button>
+                </div>
+                <p-table [value]="zakatAssets()" [tableStyle]="{ 'min-width': '52rem' }" styleClass="wealth-table">
+                    <ng-template #header>
+                        <tr>
+                            <th>Type</th>
+                            <th>Value</th>
+                            <th>CCY</th>
+                            <th>Description</th>
+                            <th style="width: 8rem"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-row>
+                        <tr>
+                            <td><p-tag [value]="row.assetType" severity="secondary" /></td>
+                            <td>{{ num(row.value) | number: '1.2-2' }}</td>
+                            <td>{{ row.currencyCode }}</td>
+                            <td>{{ row.description }}</td>
+                            <td class="text-end">
+                                <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm" (click)="editAsset(row)"></button>
+                                <button pButton icon="pi pi-trash" class="p-button-text p-button-sm" (click)="removeAsset(row)"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template #emptymessage>
+                        <tr>
+                            <td colspan="5" class="text-center text-muted-color py-6">No assets yet — add cash, gold, or savings to begin.</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        }
+
+        @if (activeTab() === 'cashflow') {
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12 lg:col-span-4 card wealth-card">
+                    <h3 class="mt-0">Quick entry</h3>
+                    <label class="field-label">Date</label>
+                    <input class="w-full mb-3 wealth-input" type="date" [(ngModel)]="txForm.occurredOn" />
+                    <label class="field-label">Direction</label>
+                    <p-select
+                        [(ngModel)]="txForm.direction"
+                        [options]="txDirectionOptions"
+                        optionLabel="label"
+                        optionValue="value"
+                        styleClass="w-full mb-3"
+                    />
+                    <label class="field-label">Category</label>
+                    <p-select [(ngModel)]="txForm.categoryCode" [options]="categoryOptions" optionLabel="label" optionValue="value" styleClass="w-full mb-3" />
+                    <label class="field-label">Amount</label>
+                    <p-inputNumber [(ngModel)]="txForm.amount" mode="decimal" [min]="0" styleClass="w-full mb-3" />
+                    <label class="field-label">Memo</label>
+                    <input pInputText class="w-full mb-3" [(ngModel)]="txForm.memo" />
+                    <button pButton type="button" label="Save transaction" class="w-full" icon="pi pi-check" (click)="addTx()"></button>
+                </div>
+                <div class="col-span-12 lg:col-span-8 card wealth-card">
+                    <h3 class="mt-0">This month</h3>
+                    <p-table [value]="transactions()" [tableStyle]="{ 'min-width': '40rem' }" styleClass="wealth-table">
+                        <ng-template #header>
+                            <tr>
+                                <th>Date</th>
+                                <th>Dir</th>
+                                <th>Category</th>
+                                <th class="text-end">Amount</th>
+                                <th></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-row>
+                            <tr>
+                                <td>{{ row.occurredOn }}</td>
+                                <td><p-tag [value]="row.direction" [severity]="row.direction === 'INCOME' ? 'success' : 'danger'" /></td>
+                                <td>{{ row.categoryCode }}</td>
+                                <td class="text-end font-medium">{{ num(row.amount) | number: '1.2-2' }}</td>
+                                <td class="text-end">
+                                    <button pButton icon="pi pi-times" class="p-button-text p-button-sm" (click)="removeTx(row)"></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        }
+
+        @if (activeTab() === 'budgets') {
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12 lg:col-span-4 card wealth-card">
+                    <h3 class="mt-0">Set cap</h3>
+                    <label class="field-label">Category</label>
+                    <p-select [(ngModel)]="budgetForm.categoryCode" [options]="categoryOptions" optionLabel="label" optionValue="value" styleClass="w-full mb-3" />
+                    <label class="field-label">Monthly cap</label>
+                    <p-inputNumber [(ngModel)]="budgetForm.capAmount" mode="decimal" [min]="0" styleClass="w-full mb-3" />
+                    <button pButton type="button" label="Save budget" class="w-full" (click)="addBudget()"></button>
+                </div>
+                <div class="col-span-12 lg:col-span-8 card wealth-card">
+                    <h3 class="mt-0">Active caps · {{ yearMonth() }}</h3>
+                    <p-table [value]="budgets()" [tableStyle]="{ 'min-width': '32rem' }" styleClass="wealth-table">
+                        <ng-template #header>
+                            <tr>
+                                <th>Category</th>
+                                <th class="text-end">Cap</th>
+                                <th></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-row>
+                            <tr>
+                                <td>{{ row.categoryCode }}</td>
+                                <td class="text-end">{{ num(row.capAmount) | number: '1.2-2' }}</td>
+                                <td class="text-end">
+                                    <button pButton icon="pi pi-trash" class="p-button-text p-button-sm" (click)="removeBudget(row)"></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        }
+
+        @if (activeTab() === 'goals') {
+            <div class="goals-grid">
+                <div class="card wealth-card goal-form">
+                    <h3 class="mt-0">New goal</h3>
+                    <label class="field-label">Title</label>
+                    <input pInputText class="w-full mb-3" [(ngModel)]="goalForm.title" placeholder="Hajj fund, home deposit…" />
+                    <label class="field-label">Target</label>
+                    <p-inputNumber [(ngModel)]="goalForm.targetAmount" mode="decimal" [min]="0" styleClass="w-full mb-3" />
+                    <label class="field-label">Saved so far</label>
+                    <p-inputNumber [(ngModel)]="goalForm.currentAmount" mode="decimal" [min]="0" styleClass="w-full mb-3" />
+                    <label class="field-label">Target date</label>
+                    <input class="w-full mb-3 wealth-input" type="date" [(ngModel)]="goalForm.targetDate" />
+                    <button pButton type="button" label="Create goal" class="w-full" icon="pi pi-flag" (click)="addGoal()"></button>
+                </div>
+                @for (g of goals(); track g.id) {
+                    <div class="card wealth-card goal-tile">
+                        <div class="goal-tile__head">
+                            <h3 class="m-0">{{ g.title }}</h3>
+                            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm" (click)="deleteGoal(g)"></button>
+                        </div>
+                        <p-progressbar [value]="goalProgress(g)" [showValue]="false" styleClass="mb-2 goal-bar" />
+                        <div class="goal-tile__nums">
+                            <span>{{ num(g.currentAmount) | number: '1.0-0' }}</span>
+                            <span class="text-muted-color">/ {{ num(g.targetAmount) | number: '1.0-0' }}</span>
+                        </div>
+                        @if (g.targetDate) {
+                            <p class="text-xs text-muted-color m-0">Target {{ g.targetDate }}</p>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        @if (activeTab() === 'simulator') {
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12 lg:col-span-4 card wealth-card">
+                    <h3 class="mt-0">Scenario inputs</h3>
+                    <p class="text-sm text-muted-color">Uses a simple monthly profit accrual — not ribā, not a promise of returns.</p>
+                    <label class="field-label">Starting balance</label>
+                    <p-inputNumber [(ngModel)]="simForm.initialBalance" mode="decimal" [min]="0" styleClass="w-full mb-3" />
+                    <label class="field-label">Monthly contribution</label>
+                    <p-inputNumber [(ngModel)]="simForm.monthlyContribution" mode="decimal" [min]="0" styleClass="w-full mb-3" />
+                    <label class="field-label">Horizon (months)</label>
+                    <p-inputNumber [(ngModel)]="simForm.months" [min]="1" [max]="600" [useGrouping]="false" styleClass="w-full mb-3" />
+                    <label class="field-label">Expected annual profit %</label>
+                    <p-inputNumber [(ngModel)]="simForm.annualProfitRatePercent" mode="decimal" [min]="0" [maxFractionDigits]="2" styleClass="w-full mb-3" />
+                    <button pButton type="button" label="Run projection" icon="pi pi-play" class="w-full" (click)="runSim()"></button>
+                </div>
+                <div class="col-span-12 lg:col-span-8 card wealth-card sim-chart-card">
+                    @if (simResult(); as r) {
+                        <div class="flex flex-wrap items-start justify-between gap-3 mb-2">
+                            <div>
+                                <h3 class="mt-0 mb-1">Projected curve</h3>
+                                <p class="text-xs text-muted-color m-0 max-w-2xl">{{ r.disclaimer }}</p>
+                            </div>
+                            <p-tag severity="success" [value]="'End balance: ' + formatInt(num(r.finalBalance))" />
+                        </div>
+                        <div class="chart-wrap line">
+                            <p-chart type="line" [data]="simChartData()" [options]="simChartOptions" />
+                        </div>
+                    } @else {
+                        <div class="empty-chart tall">Tune inputs and run to see a smooth projection ribbon.</div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<p-dialog [(visible)]="assetDialog" [modal]="true" header="Zakat asset" [style]="{ width: '32rem' }">
+    <ng-template #content>
+        <div class="flex flex-col gap-3">
+            <label class="field-label">Type</label>
+            <p-select [(ngModel)]="assetForm.assetType" [options]="assetTypeOptions" optionLabel="label" optionValue="value" styleClass="w-full" />
+            <label class="field-label">Amount / units</label>
+            <p-inputNumber [(ngModel)]="assetForm.amount" styleClass="w-full" />
+            <label class="field-label">Value (for Zakat)</label>
+            <p-inputNumber [(ngModel)]="assetForm.value" styleClass="w-full" />
+            <label class="field-label">Currency</label>
+            <input pInputText [(ngModel)]="assetForm.currencyCode" maxlength="3" class="w-full" />
+            <label class="field-label">Description</label>
+            <input pInputText [(ngModel)]="assetForm.description" class="w-full" />
+            <label class="field-label">Weight (g) — gold/silver</label>
+            <p-inputNumber [(ngModel)]="assetForm.weight" [useGrouping]="false" styleClass="w-full" />
+            <label class="field-label">Purity % — gold</label>
+            <p-inputNumber [(ngModel)]="assetForm.purity" [useGrouping]="false" styleClass="w-full" />
+            <label class="field-label">Annual return % — investments</label>
+            <p-inputNumber [(ngModel)]="assetForm.annualReturnRate" [useGrouping]="false" styleClass="w-full" />
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <button pButton label="Cancel" class="p-button-text" (click)="assetDialog = false"></button>
+        <button pButton label="Save" icon="pi pi-check" (click)="saveAsset()"></button>
+    </ng-template>
+</p-dialog>

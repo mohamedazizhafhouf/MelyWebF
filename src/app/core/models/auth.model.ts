@@ -20,6 +20,7 @@ export interface RegistrationResponse {
 export interface LoginResponse {
     token: string;
     tokenType: string;
+    userId?: string;
     email: string;
     role: string;
     organizationId: string | null;
@@ -30,6 +31,7 @@ export interface LoginResponse {
 export interface StoredSession {
     token: string;
     tokenType: string;
+    userId?: string;
     email: string;
     role: string;
     organizationId: string | null;

@@ -1,0 +1,103 @@
+<p-toast />
+
+<div class="fx-page">
+    <section class="fx-hero card">
+        <div class="fx-hero__accent" aria-hidden="true"></div>
+        <div class="relative z-1">
+            <p class="fx-eyebrow">Markets · APILayer Currencylayer</p>
+            <h1 class="fx-title">Currency converter</h1>
+            <p class="fx-lead text-muted-color leading-relaxed max-w-3xl m-0 mb-4">
+                Live-style midpoint rates via our backend proxy (your API key stays on the server). Perfect for planning Zakat and
+                wealth amounts in the currency you think in — not a trading quote.
+            </p>
+            <a pButton routerLink="/wealth" label="Back to wealth hub" icon="pi pi-arrow-left" class="p-button-text" [rounded]="true"></a>
+        </div>
+    </section>
+
+    @if (configError(); as ce) {
+        <p-message severity="warn" styleClass="w-full mb-4">{{ ce }}</p-message>
+    }
+
+    <div class="grid grid-cols-12 gap-6">
+        <div class="col-span-12 xl:col-span-7">
+            <div class="card fx-panel h-full">
+                <h2 class="text-xl font-semibold mt-0 mb-4">Convert</h2>
+                <div class="fx-grid">
+                    <div class="fx-field">
+                        <label for="fx-from">From</label>
+                        <p-select
+                            inputId="fx-from"
+                            [(ngModel)]="from"
+                            [options]="currencyOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            styleClass="w-full"
+                        />
+                    </div>
+                    <div class="fx-swap">
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-arrows-h"
+                            [rounded]="true"
+                            [text]="true"
+                            (click)="swap()"
+                            pTooltip="Swap from / to"
+                            tooltipPosition="bottom"
+                        ></button>
+                    </div>
+                    <div class="fx-field">
+                        <label for="fx-to">To</label>
+                        <p-select
+                            inputId="fx-to"
+                            [(ngModel)]="to"
+                            [options]="currencyOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            styleClass="w-full"
+                        />
+                    </div>
+                </div>
+                <div class="mt-4 mb-4">
+                    <label for="fx-amt" class="block font-semibold mb-2">Amount</label>
+                    <p-inputNumber
+                        inputId="fx-amt"
+                        [(ngModel)]="amount"
+                        mode="decimal"
+                        [minFractionDigits]="0"
+                        [maxFractionDigits]="4"
+                        [min]="0"
+                        styleClass="w-full fx-amount"
+                    />
+                </div>
+                <button pButton type="button" label="Convert" icon="pi pi-sync" class="w-full sm:w-auto" (click)="convert()" [loading]="loading()" [rounded]="true"></button>
+            </div>
+        </div>
+        <div class="col-span-12 xl:col-span-5">
+            <div class="card fx-result h-full">
+                <h2 class="text-xl font-semibold mt-0 mb-2">Result</h2>
+                @if (result(); as r) {
+                    <div class="fx-result__glow" aria-hidden="true"></div>
+                    <div class="fx-result__value">
+                        <span class="fx-result__num">{{ r.result | number: '1.2-6' }}</span>
+                        <span class="fx-result__ccy">{{ r.to }}</span>
+                    </div>
+                    <p class="text-sm text-muted-color m-0 mb-2">From <strong>{{ r.amount | number: '1.2-4' }} {{ r.from }}</strong></p>
+                    @if (r.rate != null) {
+                        <p class="text-sm m-0 mb-2">Rate: <strong>{{ r.rate | number: '1.6-8' }}</strong> {{ r.to }} per 1 {{ r.from }}</p>
+                    }
+                    @if (r.providerTimestamp) {
+                        <p class="text-xs text-muted-color m-0 mb-3">
+                            Rate as of:
+                            {{ (r.providerTimestamp < 1e12 ? r.providerTimestamp * 1000 : r.providerTimestamp) | date: 'medium' }}
+                        </p>
+                    }
+                    <p-divider />
+                    <p class="text-xs text-muted-color m-0 leading-relaxed">{{ r.disclaimer }}</p>
+                } @else {
+                    <p class="text-muted-color m-0">Run a conversion to see the animated result card.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -17,6 +17,8 @@ export const appRoutes: Routes = [
             { path: 'halal-stocks', loadChildren: () => import('./app/pages/halal-stocks/halal-stocks.routes') },
             { path: 'zakat', loadChildren: () => import('./app/pages/zakat/zakat.routes') },
             { path: 'gold-prices', loadChildren: () => import('./app/pages/gold-prices/gold-prices.routes') },
+            { path: 'wealth', loadChildren: () => import('./app/pages/wealth/wealth.routes') },
+            { path: 'currency', loadChildren: () => import('./app/pages/currency/currency.routes') },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }

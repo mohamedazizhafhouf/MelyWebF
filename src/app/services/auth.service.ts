@@ -39,6 +39,31 @@ export class AuthService {
         return this.getSession()?.token ?? null;
     }
 
+    /** User id from login payload or JWT `userId` claim (for API calls). */
+    getUserId(): string | null {
+        const session = this.getSession();
+        if (session?.userId) {
+            return session.userId;
+        }
+        const token = session?.token;
+        if (!token) {
+            return null;
+        }
+        try {
+            const payloadSegment = token.split('.')[1];
+            if (!payloadSegment) {
+                return null;
+            }
+            const normalizedPayload = payloadSegment.replace(/-/g, '+').replace(/_/g, '/');
+            const padding = (4 - (normalizedPayload.length % 4)) % 4;
+            const paddedPayload = normalizedPayload.padEnd(normalizedPayload.length + padding, '=');
+            const payload = JSON.parse(atob(paddedPayload)) as { userId?: string };
+            return payload.userId ?? null;
+        } catch {
+            return null;
+        }
+    }
+
     getSession(): StoredSession | null {
         const rawSession = localStorage.getItem(this.storageKey);
         if (!rawSession) {
@@ -62,6 +87,7 @@ export class AuthService {
         const session: StoredSession = {
             token: response.token,
             tokenType: response.tokenType,
+            userId: response.userId,
             email: response.email,
             role: response.role,
             organizationId: response.organizationId,

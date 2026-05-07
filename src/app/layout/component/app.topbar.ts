@@ -34,7 +34,7 @@ import { AuthService } from '../../services/auth.service';
                         />
                     </g>
                 </svg>
-                <span>SAKAI</span>
+                <span>Mely</span>
             </a>
         </div>
 

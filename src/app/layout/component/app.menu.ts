@@ -30,6 +30,8 @@ export class AppMenu {
                     { label: 'New Screening', icon: 'pi pi-fw pi-chart-line', routerLink: ['/halal-stocks/new'] },
                     { label: 'Screening History', icon: 'pi pi-fw pi-history', routerLink: ['/halal-stocks/history'] },
                     { label: 'Zakat calculator', icon: 'pi pi-fw pi-calculator', routerLink: ['/zakat'] },
+                    { label: 'Wealth hub', icon: 'pi pi-fw pi-wallet', routerLink: ['/wealth'] },
+                    { label: 'Currency converter', icon: 'pi pi-fw pi-dollar', routerLink: ['/currency'] },
                     { label: 'Gold & silver spot', icon: 'pi pi-fw pi-chart-line', routerLink: ['/gold-prices'] }
                 ]
             },
