@@ -1,24 +1,20 @@
 import { Component } from '@angular/core';
-import { NotificationsWidget } from './components/notificationswidget';
-import { StatsWidget } from './components/statswidget';
-import { RecentSalesWidget } from './components/recentsaleswidget';
-import { BestSellingWidget } from './components/bestsellingwidget';
-import { RevenueStreamWidget } from './components/revenuestreamwidget';
+import { MelyGuidanceWidget } from './components/mely-guidance.widget';
+import { MelyHalalStocksOverviewWidget } from './components/mely-halal-stocks-overview.widget';
+import { MelyZakatWidget } from './components/mely-zakat.widget';
+import { MelyHowItWorksWidget } from './components/mely-how-it-works.widget';
+import { MelyScreeningActivityWidget } from './components/mely-screening-activity.widget';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [StatsWidget, RecentSalesWidget, BestSellingWidget, RevenueStreamWidget, NotificationsWidget],
+    imports: [MelyHalalStocksOverviewWidget, MelyZakatWidget, MelyScreeningActivityWidget, MelyGuidanceWidget, MelyHowItWorksWidget],
     template: `
         <div class="grid grid-cols-12 gap-8">
-            <app-stats-widget class="contents" />
-            <div class="col-span-12 xl:col-span-6">
-                <app-recent-sales-widget />
-                <app-best-selling-widget />
-            </div>
-            <div class="col-span-12 xl:col-span-6">
-                <app-revenue-stream-widget />
-                <app-notifications-widget />
-            </div>
+            <app-mely-halal-stocks-overview-widget class="contents" />
+            <app-mely-zakat-widget class="contents" />
+            <app-mely-screening-activity-widget class="contents" />
+            <app-mely-guidance-widget class="contents" />
+            <app-mely-how-it-works-widget class="contents" />
         </div>
     `
 })

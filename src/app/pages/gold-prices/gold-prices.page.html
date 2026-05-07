@@ -1,0 +1,122 @@
+<p-toast></p-toast>
+
+<div class="gold-page grid grid-cols-12 gap-8">
+    <div class="col-span-12">
+        <div class="card hero-gold">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                <div>
+                    <div class="eyebrow mb-2">Live markets</div>
+                    <h1 class="text-3xl font-semibold mb-3 text-surface-900 dark:text-surface-0">Gold &amp; silver spot</h1>
+                    <p class="text-muted-color leading-relaxed max-w-3xl mb-0">
+                        Indicative spot from <a href="https://gold-api.com" target="_blank" rel="noopener noreferrer" class="text-primary">gold-api.com</a>
+                        (per troy ounce, converted to <strong>grams</strong> and <strong>kilograms</strong> using 1 troy oz = 31.1034768 g).
+                        Chart uses per-gram series. Not investment advice.
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
+                    <div class="field-block">
+                        <label for="ccy">Currency</label>
+                        <p-select
+                            inputId="ccy"
+                            [(ngModel)]="selectedCurrency"
+                            [options]="currencyOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            (onChange)="onCurrencyChange()"
+                            styleClass="w-full"
+                            [style]="{ minWidth: '10rem' }"
+                        ></p-select>
+                    </div>
+                    <button pButton type="button" label="Refresh" icon="pi pi-refresh" (click)="reloadAll()" [outlined]="true"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-span-12 lg:col-span-4">
+        <div class="card kpi-card kpi-gold h-full">
+            <div class="kpi-label">Gold (XAU)</div>
+            @if (spot(); as s) {
+                @if (s.gold.error) {
+                    <p class="text-muted-color m-0">{{ s.gold.error }}</p>
+                } @else {
+                    <div class="kpi-big">{{ formatMoney(s.gold.pricePerTroyOunce, s.currency) }}</div>
+                    <div class="kpi-sub">per troy oz · {{ s.currency }}</div>
+                    <div class="kpi-row">
+                        <span>Fine gold / gram</span>
+                        <strong>{{ formatMoney(s.gold.priceGram24k, s.currency) }}</strong>
+                    </div>
+                    <div class="kpi-row">
+                        <span>Fine gold / kg</span>
+                        <strong>{{ formatMoney(s.gold.pricePerKilogram, s.currency) }}</strong>
+                    </div>
+                    <div class="kpi-meta">{{ formatTs(s.gold.timestamp) }}</div>
+                }
+            } @else {
+                <p class="text-muted-color m-0">Loading…</p>
+            }
+        </div>
+    </div>
+
+    <div class="col-span-12 lg:col-span-4">
+        <div class="card kpi-card kpi-silver h-full">
+            <div class="kpi-label">Silver (XAG)</div>
+            @if (spot(); as s) {
+                @if (s.silver.error) {
+                    <p class="text-muted-color m-0">{{ s.silver.error }}</p>
+                } @else {
+                    <div class="kpi-big">{{ formatMoney(s.silver.pricePerTroyOunce, s.currency) }}</div>
+                    <div class="kpi-sub">per troy oz · {{ s.currency }}</div>
+                    <div class="kpi-row">
+                        <span>Fine silver / gram</span>
+                        <strong>{{ formatMoney(s.silver.priceGram24k, s.currency) }}</strong>
+                    </div>
+                    <div class="kpi-row">
+                        <span>Fine silver / kg</span>
+                        <strong>{{ formatMoney(s.silver.pricePerKilogram, s.currency) }}</strong>
+                    </div>
+                    <div class="kpi-meta">{{ formatTs(s.silver.timestamp) }}</div>
+                }
+            } @else {
+                <p class="text-muted-color m-0">Loading…</p>
+            }
+        </div>
+    </div>
+
+    <div class="col-span-12 lg:col-span-4">
+        <div class="card kpi-card kpi-session h-full">
+            <div class="kpi-label">Session</div>
+            <p class="text-muted-color text-sm leading-relaxed m-0 mb-3">
+                Spot refreshes automatically about every 90 seconds. History chart needs <code class="text-xs">GOLD_API_KEY</code> on the API (gold-api.com; sent as <code class="text-xs">x-api-key</code>). Up to {{ historyDays }} days when configured.
+            </p>
+            @if (history()?.note; as noteText) {
+                <p class="text-orange-600 dark:text-orange-300 text-sm m-0 mb-3">{{ noteText }}</p>
+            }
+            <div class="kpi-row">
+                <span>Last spot refresh</span>
+                <strong>{{ lastUpdated() || '—' }}</strong>
+            </div>
+            <a routerLink="/zakat" class="text-primary text-sm font-medium inline-flex align-items-center gap-2 mt-3">
+                <i class="pi pi-calculator"></i> Open Zakat calculator
+            </a>
+        </div>
+    </div>
+
+    <div class="col-span-12">
+        <div class="card chart-card">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+                <div>
+                    <h2 class="text-xl font-semibold m-0">Price history (per gram)</h2>
+                    <p class="text-muted-color text-sm m-0 mt-1">Animated line chart · dual metal</p>
+                </div>
+            </div>
+            <div class="chart-wrap">
+                @if (chartData() && chartOptions()) {
+                    <p-chart type="line" [data]="chartData()" [options]="chartOptions()" class="gold-chart"></p-chart>
+                } @else if (!loadingChart()) {
+                    <p class="text-muted-color m-0 p-6 text-center">No chart data.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

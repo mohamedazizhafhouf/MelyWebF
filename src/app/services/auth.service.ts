@@ -27,11 +27,12 @@ export class AuthService {
     }
 
     isLoggedIn(): boolean {
-        return !!this.getToken();
+        return !!this.getSession();
     }
 
     isSaasUserSession(): boolean {
-        return this.getSession()?.accountType === 'SAAS';
+        const session = this.getSession();
+        return session?.accountType === 'SAAS';
     }
 
     getToken(): string | null {
@@ -45,7 +46,12 @@ export class AuthService {
         }
 
         try {
-            return JSON.parse(rawSession) as StoredSession;
+            const session = JSON.parse(rawSession) as StoredSession;
+            if (!session.token || this.isTokenExpired(session.token)) {
+                this.logout();
+                return null;
+            }
+            return session;
         } catch {
             this.logout();
             return null;
@@ -62,5 +68,27 @@ export class AuthService {
             accountType: response.accountType
         };
         localStorage.setItem(this.storageKey, JSON.stringify(session));
+    }
+
+    private isTokenExpired(token: string): boolean {
+        try {
+            const payloadSegment = token.split('.')[1];
+            if (!payloadSegment) {
+                return true;
+            }
+
+            const normalizedPayload = payloadSegment.replace(/-/g, '+').replace(/_/g, '/');
+            const padding = (4 - (normalizedPayload.length % 4)) % 4;
+            const paddedPayload = normalizedPayload.padEnd(normalizedPayload.length + padding, '=');
+            const payload = JSON.parse(atob(paddedPayload)) as { exp?: number };
+
+            if (!payload.exp) {
+                return true;
+            }
+
+            return payload.exp * 1000 <= Date.now();
+        } catch {
+            return true;
+        }
     }
 }

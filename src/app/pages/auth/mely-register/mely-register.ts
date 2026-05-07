@@ -7,7 +7,6 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 import { RegisterRequest } from '../../../core/models/auth.model';
 import { AuthService } from '../../../services/auth.service';
 
@@ -15,7 +14,7 @@ import { AuthService } from '../../../services/auth.service';
     selector: 'app-mely-register',
     standalone: true,
     providers: [MessageService],
-    imports: [ButtonModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, ToastModule, AppFloatingConfigurator],
+    imports: [ButtonModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, ToastModule],
     templateUrl: './mely-register.html',
     styleUrl: './mely-register.scss'
 })

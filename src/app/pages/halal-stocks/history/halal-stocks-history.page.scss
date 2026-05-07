@@ -1,0 +1,96 @@
+.history-hero {
+    background:
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.12), transparent 38%),
+        linear-gradient(135deg, rgba(15, 118, 110, 0.06), rgba(255, 255, 255, 0));
+}
+
+.eyebrow {
+    color: #0f766e;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.eyebrow.light {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.field-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+}
+
+.summary-cell {
+    color: var(--text-color-secondary);
+    max-width: 22rem;
+    white-space: normal;
+}
+
+.empty-history {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 16rem;
+    text-align: center;
+}
+
+.detail-banner {
+    border-radius: 1.25rem;
+    color: white;
+    padding: 1.5rem;
+}
+
+.detail-banner.verdict-halal {
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+}
+
+.detail-banner.verdict-non_halal {
+    background: linear-gradient(135deg, #b91c1c, #ef4444);
+}
+
+.detail-banner.verdict-review_required,
+.detail-banner.verdict-processing {
+    background: linear-gradient(135deg, #a16207, #f59e0b);
+}
+
+.detail-card {
+    border: 1px solid var(--surface-border);
+    border-radius: 1rem;
+    background: var(--surface-card);
+    padding: 1.25rem;
+}
+
+.detail-label {
+    color: var(--text-color-secondary);
+    display: block;
+    font-size: 0.8rem;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+}
+
+.panel-card {
+    height: 100%;
+}
+
+.rules-stack,
+.warnings-stack {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.rule-row {
+    border: 1px solid var(--surface-border);
+    border-radius: 0.9rem;
+    padding: 0.95rem 1rem;
+}
+
+.warning-chip {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 0.85rem;
+    padding: 0.8rem 0.95rem;
+}

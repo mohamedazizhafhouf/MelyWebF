@@ -8,14 +8,13 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
     selector: 'app-mely-login',
     standalone: true,
     providers: [MessageService],
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, ToastModule, AppFloatingConfigurator],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, ToastModule],
     templateUrl: './mely-login.html',
     styleUrl: './mely-login.scss'
 })
