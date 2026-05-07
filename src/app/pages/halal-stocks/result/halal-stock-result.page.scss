@@ -1,0 +1,319 @@
+.result-container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+.result-eyebrow {
+    color: #0f766e;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    gap: 1rem;
+    color: var(--p-text-color-secondary);
+}
+
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    gap: 1rem;
+    text-align: center;
+
+    .error-icon {
+        font-size: 3rem;
+        color: var(--red-500);
+    }
+
+    h3 {
+        margin: 0;
+        color: var(--p-text-color);
+    }
+
+    p {
+        color: var(--p-text-color-secondary);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+
+    .header-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 2.5vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+}
+
+.verdict-section {
+    margin: 2rem 0;
+
+    .verdict-card {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        padding: 2rem;
+        border-radius: 12px;
+        background: var(--p-surface-50);
+        border: 2px solid transparent;
+
+        &.verdict-HALAL {
+            background: linear-gradient(135deg, #e6f4ea 0%, #c8e6c9 100%);
+            border-color: #4caf50;
+        }
+
+        &.verdict-NON_HALAL {
+            background: linear-gradient(135deg, #fce4e4 0%, #ffcdd2 100%);
+            border-color: #f44336;
+        }
+
+        &.verdict-REVIEW_REQUIRED {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-color: #ff9800;
+        }
+
+        .verdict-icon {
+            font-size: 4rem;
+
+            .verdict-HALAL & {
+                color: #4caf50;
+            }
+
+            .verdict-NON_HALAL & {
+                color: #f44336;
+            }
+
+            .verdict-REVIEW_REQUIRED & {
+                color: #ff9800;
+            }
+        }
+
+        .verdict-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            flex: 1;
+            min-width: 0;
+
+            .verdict-kicker {
+                margin: 0;
+                font-size: 0.75rem;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--p-text-color-secondary);
+            }
+
+            .verdict-summary {
+                margin: 0.25rem 0 0;
+                font-size: 1.05rem;
+                line-height: 1.55;
+                color: var(--p-text-color);
+            }
+
+            .verdict-meta {
+                margin: 0;
+                color: var(--p-text-color-secondary);
+                font-size: 0.88rem;
+            }
+        }
+    }
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 1.5rem 0 1rem 0;
+    color: var(--p-text-color);
+}
+
+.warnings-section {
+    margin: 1.5rem 0;
+
+    .warning-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: #fff3e0;
+        border-left: 3px solid #ff9800;
+        margin-bottom: 0.5rem;
+        border-radius: 4px;
+
+        i {
+            color: #ff9800;
+        }
+    }
+}
+
+.tatheer-section {
+    margin: 1.5rem 0;
+
+    .tatheer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1.5rem;
+
+        .tatheer-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+
+            .label {
+                font-size: 0.85rem;
+                color: var(--p-text-color-secondary);
+            }
+
+            .value {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #ff9800;
+            }
+        }
+    }
+}
+
+.explanation-section,
+.activity-section {
+    margin: 1.75rem 0;
+
+    .explanation-body,
+    .activity-body {
+        font-size: 1rem;
+        line-height: 1.65;
+        white-space: pre-wrap;
+        word-break: break-word;
+        color: var(--p-text-color);
+    }
+}
+
+.rules-section {
+    margin: 1.5rem 0;
+
+    .rules-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        :deep(.rule-card) {
+            margin-bottom: 0;
+        }
+
+        .rule-item {
+            display: flex;
+            gap: 1rem;
+
+            .rule-status {
+                font-size: 1.5rem;
+
+                .passed {
+                    color: #4caf50;
+                }
+
+                .failed {
+                    color: #f44336;
+                }
+
+                .pending {
+                    color: var(--p-text-color-secondary);
+                }
+            }
+
+            .rule-details {
+                flex: 1;
+
+                .rule-name {
+                    font-weight: 600;
+                    margin: 0 0 0.25rem 0;
+                }
+
+                .rule-description {
+                    margin: 0 0 0.5rem 0;
+                    color: var(--p-text-color-secondary);
+                    font-size: 0.9rem;
+                }
+
+                .rule-metrics {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.5rem;
+                }
+            }
+        }
+    }
+}
+
+.metrics-section {
+    margin: 1.5rem 0;
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+
+            .metric-label {
+                font-size: 0.85rem;
+                color: var(--p-text-color-secondary);
+            }
+
+            .metric-value {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin: 0;
+            }
+
+            .metric-source {
+                font-size: 0.8rem;
+                color: var(--p-text-color-secondary);
+                margin: 0;
+            }
+        }
+    }
+}
+
+:host ::ng-deep {
+    .p-card {
+        background: var(--p-surface-card);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+}

@@ -1,0 +1,211 @@
+<p-toast></p-toast>
+
+<div class="grid grid-cols-12 gap-8">
+    <div class="col-span-12">
+        <div class="card history-hero">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div>
+                    <div class="eyebrow mb-3">Screening History</div>
+                    <h1 class="text-3xl font-semibold mb-3">Revisit your past halal stock screenings with context, verdicts, and explanation trails.</h1>
+                    <p class="text-muted-color mb-0">Filter by status or verdict and open any row for a quick summary, or jump to the full verdict page.</p>
+                </div>
+                <a pButton routerLink="/halal-stocks/new" icon="pi pi-plus" label="New Screening"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-span-12">
+        <div class="card">
+            <div class="grid grid-cols-12 gap-4 items-end mb-6">
+                <div class="col-span-12 md:col-span-4">
+                    <label class="field-label">Search company or ticker</label>
+                    <p-iconfield>
+                        <p-inputicon class="pi pi-search"></p-inputicon>
+                        <input pInputText [(ngModel)]="filters.query" class="w-full" placeholder="Sukuk Tech, SKTK..." />
+                    </p-iconfield>
+                </div>
+                <div class="col-span-12 md:col-span-3">
+                    <label class="field-label">Status</label>
+                    <p-select [(ngModel)]="filters.status" [options]="statusOptions" optionLabel="label" optionValue="value" class="w-full"></p-select>
+                </div>
+                <div class="col-span-12 md:col-span-3">
+                    <label class="field-label">Verdict</label>
+                    <p-select [(ngModel)]="filters.verdict" [options]="verdictOptions" optionLabel="label" optionValue="value" class="w-full"></p-select>
+                </div>
+                <div class="col-span-12 md:col-span-2">
+                    <button pButton type="button" label="Apply" icon="pi pi-filter" class="w-full" (click)="applyFilters()"></button>
+                </div>
+            </div>
+
+            <p-table
+                [value]="rows"
+                [rows]="filters.size ?? 10"
+                [paginator]="true"
+                [lazy]="true"
+                [first]="firstRecord"
+                [totalRecords]="totalRecords"
+                [loading]="false"
+                responsiveLayout="scroll"
+                [tableStyle]="{ 'min-width': '72rem' }"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} screenings"
+                [showCurrentPageReport]="true"
+                (onPage)="onPageChange($event)"
+            >
+                <ng-template #header>
+                    <tr>
+                        <th>Company</th>
+                        <th>Status</th>
+                        <th>Verdict</th>
+                        <th>Purification</th>
+                        <th>Summary</th>
+                        <th>Created</th>
+                        <th>Run Mode</th>
+                        <th>Screening Path</th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+
+                <ng-template #body let-item>
+                    <tr>
+                        <td>
+                            <div class="font-medium">{{ item.companyName }}</div>
+                            <small class="text-muted-color">{{ item.ticker || 'No ticker provided' }}</small>
+                        </td>
+                        <td>
+                            <p-tag [severity]="rowStatusSeverity(item.status)" [value]="item.status"></p-tag>
+                        </td>
+                        <td>
+                            <p-tag [severity]="verdictSeverity(item.verdict)" [value]="item.verdict || 'PENDING'"></p-tag>
+                        </td>
+                        <td>
+                            <div class="font-medium">{{ item.tatheerAmount ?? item.purificationRatio ?? 'N/A' }}</div>
+                            <small class="text-muted-color">{{ item.needsTatheer ? 'Tatheer needed' : 'No tatheer flag' }}</small>
+                        </td>
+                        <td>
+                            <div class="summary-cell">{{ item.userMessage || 'No summary available yet.' }}</div>
+                        </td>
+                        <td>
+                            <div>{{ item.createdAt | date: 'mediumDate' }}</div>
+                            <small class="text-muted-color">{{ item.completedAt ? ('Completed ' + (item.completedAt | date: 'shortTime')) : 'Still processing' }}</small>
+                        </td>
+                        <td>
+                            <p-tag severity="secondary" [value]="item.requestedMode"></p-tag>
+                        </td>
+                        <td>
+                            <p-tag [severity]="item.screeningMode === 'AUTOMATIC_LLM' ? 'info' : 'secondary'" [value]="formatScreeningMode(item.screeningMode)"></p-tag>
+                        </td>
+                        <td class="text-right">
+                            <div class="flex justify-end gap-2 flex-wrap">
+                                <button
+                                    pButton
+                                    type="button"
+                                    icon="pi pi-external-link"
+                                    label="Verdict page"
+                                    severity="primary"
+                                    [outlined]="true"
+                                    (click)="openFullResult(item.requestId)"
+                                ></button>
+                                <button pButton type="button" icon="pi pi-eye" label="Summary" severity="secondary" [outlined]="true" (click)="openDetails(item.requestId)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="9">
+                            <div class="empty-history">
+                                <i class="pi pi-clock text-3xl mb-3"></i>
+                                <div class="font-medium mb-2">No screenings match these filters yet.</div>
+                                <p class="text-muted-color m-0">Run a new halal stock screening and it will appear here automatically.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+
+<p-dialog [(visible)]="detailVisible" [modal]="true" [style]="{ width: '72rem', maxWidth: '96vw' }" [draggable]="false" header="Screening Details">
+    <ng-template #content>
+        @if (selectedResult) {
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="detail-banner" [ngClass]="selectedResult.verdict ? 'verdict-' + selectedResult.verdict.toLowerCase() : 'verdict-processing'">
+                        <div>
+                            <div class="eyebrow light">Detailed result</div>
+                            <h2 class="m-0">{{ selectedResult.verdict || selectedResult.status }}</h2>
+                            <p class="mb-0 mt-2">{{ selectedResult.userMessage || 'No summary available.' }}</p>
+                        </div>
+                        <div class="mt-4">
+                            <p-tag [severity]="selectedResult.screeningMode === 'AUTOMATIC_LLM' ? 'info' : 'secondary'" [value]="formatScreeningMode(selectedResult.screeningMode)"></p-tag>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="detail-card">
+                        <span class="detail-label">Tatheer Amount</span>
+                        <strong>{{ selectedResult.tatheerAmount ?? 'N/A' }}</strong>
+                    </div>
+                </div>
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="detail-card">
+                        <span class="detail-label">Purification Ratio</span>
+                        <strong>{{ selectedResult.purificationRatio ?? 'N/A' }}</strong>
+                    </div>
+                </div>
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="detail-card">
+                        <span class="detail-label">Needs Tatheer</span>
+                        <strong>{{ selectedResult.needsTatheer === null ? 'Pending' : (selectedResult.needsTatheer ? 'Yes' : 'No') }}</strong>
+                    </div>
+                </div>
+
+                <div class="col-span-12 lg:col-span-7">
+                    <div class="detail-card panel-card">
+                        <div class="font-semibold text-xl mb-4">Rule breakdown</div>
+                        @if (selectedResult.ruleResults?.length) {
+                            <div class="rules-stack">
+                                @for (rule of selectedResult.ruleResults; track rule.ruleCode + rule.label) {
+                                    <div class="rule-row">
+                                        <div class="flex items-center justify-between gap-3 flex-wrap">
+                                            <div class="font-medium">{{ rule.label }}</div>
+                                            <p-tag
+                                                [severity]="rule.passed === true ? 'success' : rule.passed === false ? 'danger' : 'warn'"
+                                                [value]="rule.status"
+                                            ></p-tag>
+                                        </div>
+                                        <p class="text-muted-color mb-0 mt-2">{{ rule.message }}</p>
+                                    </div>
+                                }
+                            </div>
+                        } @else {
+                            <div class="text-muted-color">No rule details are available for this request yet.</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-span-12 lg:col-span-5">
+                    <div class="detail-card panel-card">
+                        <div class="font-semibold text-xl mb-4">Why this verdict?</div>
+                        <p class="text-muted-color leading-relaxed">
+                            {{ selectedExplanation?.explanation || selectedResult.userMessage || 'Explanation is not available yet.' }}
+                        </p>
+
+                        @if (selectedResult.warnings.length) {
+                            <div class="warnings-stack mt-4">
+                                @for (warning of selectedResult.warnings; track warning) {
+                                    <div class="warning-chip">{{ warning }}</div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        } @else {
+            <p class="text-muted-color m-0">Loading details…</p>
+        }
+    </ng-template>
+</p-dialog>

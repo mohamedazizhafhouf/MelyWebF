@@ -1,0 +1,328 @@
+<p-toast></p-toast>
+
+<div class="grid grid-cols-12 gap-8 halal-stocks-workspace">
+    <div class="col-span-12 xl:col-span-8">
+        <div class="card hero-panel">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                <div>
+                    <div class="eyebrow mb-3">Halal Investing Workspace</div>
+                    <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 mb-3">Halal stock screening — manual financial review</h1>
+                    <p class="text-muted-color leading-relaxed mb-0">
+                        Enter company context and the five core financial inputs. Mely runs the Sharia rules engine and shows a clear verdict with a written explanation on the next page.
+                    </p>
+                </div>
+                <div class="hero-pill-grid">
+                    <div class="hero-pill">
+                        <span class="hero-pill-label">Active path</span>
+                        <strong>Manual screening</strong>
+                    </div>
+                    <div class="hero-pill">
+                        <span class="hero-pill-label">History</span>
+                        <button pButton type="button" label="Open" icon="pi pi-arrow-right" severity="secondary" [text]="true" (click)="openHistory()"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mode-selector-grid mt-6">
+                <button
+                    pButton
+                    type="button"
+                    class="mode-choice mode-choice-active"
+                >
+                    <span class="mode-choice-kicker">Manual Screening</span>
+                    <span class="mode-choice-title">Enter financial data</span>
+                    <span class="mode-choice-copy">Rules-based screening with full verdict and explanation — no document upload required.</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="card wizard-shell">
+                <p-stepper [value]="activeStep">
+                    <p-step-list>
+                        <p-step [value]="1">Company</p-step>
+                        <p-step [value]="2">Financials</p-step>
+                        <p-step [value]="3">Review</p-step>
+                    </p-step-list>
+
+                    <div class="wizard-panels">
+                        @if (activeStep === 1) {
+                            <div class="wizard-section">
+                                <div class="wizard-heading">
+                                    <h2>Company profile</h2>
+                                    <p>Capture the company identity first, then describe the business clearly so the activity screening and explanation stay understandable.</p>
+                                </div>
+
+                                <div class="field-group mb-6">
+                                    <div class="group-title">Identity and market context</div>
+                                    <div class="grid grid-cols-12 gap-6">
+                                        <div class="col-span-12 md:col-span-7">
+                                            <label for="companyName" class="field-label">Company Name <span class="required-mark">*</span></label>
+                                            <input id="companyName" pInputText [(ngModel)]="form.companyName" class="w-full" placeholder="Example: Sukuk Tech" />
+                                            <small class="field-helper">Required. This is the company name shown in the verdict and history.</small>
+                                        </div>
+                                        <div class="col-span-12 md:col-span-5">
+                                            <label for="ticker" class="field-label">Ticker</label>
+                                            <input id="ticker" pInputText [(ngModel)]="form.ticker" class="w-full" placeholder="Optional ticker" />
+                                            <small class="field-helper">Optional. Useful for search and history lookup later.</small>
+                                        </div>
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label for="countryOrMarket" class="field-label">Country / Market <span class="required-mark">*</span></label>
+                                            <input id="countryOrMarket" pInputText [(ngModel)]="form.countryOrMarket" class="w-full" placeholder="Tunisia, NYSE, Nasdaq..." />
+                                            <small class="field-helper">Required. Add the exchange, market, or operating geography.</small>
+                                        </div>
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label for="currency" class="field-label">Currency <span class="required-mark">*</span></label>
+                                            <input id="currency" pInputText [(ngModel)]="form.currency" class="w-full" placeholder="USD, TND, SAR..." />
+                                            <small class="field-helper">Required. Use the currency used in the submitted financial values.</small>
+                                        </div>
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label for="sector" class="field-label">Sector</label>
+                                            <input id="sector" pInputText [(ngModel)]="form.sector" class="w-full" placeholder="Technology, Retail, Healthcare..." />
+                                        </div>
+                                        <div class="col-span-12 md:col-span-3">
+                                            <label for="fiscalYear" class="field-label">Fiscal Year</label>
+                                            <input id="fiscalYear" pInputText [(ngModel)]="form.fiscalYear" class="w-full" placeholder="2025" />
+                                        </div>
+                                        <div class="col-span-12 md:col-span-3">
+                                            <label for="reportingPeriod" class="field-label">Reporting Period</label>
+                                            <input id="reportingPeriod" pInputText [(ngModel)]="form.reportingPeriod" class="w-full" placeholder="Q4 / Annual" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field-group">
+                                    <div class="group-title">Business activity description</div>
+                                    <div class="grid grid-cols-12 gap-6">
+                                        <div class="col-span-12">
+                                            <label for="businessDescription" class="field-label">Business Description <span class="required-mark">*</span></label>
+                                            <textarea
+                                                id="businessDescription"
+                                                pTextarea
+                                                [(ngModel)]="form.businessDescription"
+                                                class="w-full"
+                                                rows="6"
+                                                placeholder="Describe the company activity, products, revenue model, and major lines of business."
+                                            ></textarea>
+                                            <small class="field-helper">Required. This helps the backend explain why the activity was screened as halal, non-halal, or review-required.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (activeStep === 2) {
+                            <div class="wizard-section">
+                                <div class="wizard-heading">
+                                    <h2>Financial inputs</h2>
+                                    <p>These manual values drive the Sharia screening ratios immediately. The five core ratio inputs are required for a direct manual verdict.</p>
+                                </div>
+
+                                <div class="field-group mb-6">
+                                    <div class="group-title">Core screening ratios</div>
+                                    <p class="group-copy">These five values are required for immediate manual halal screening.</p>
+
+                                    <div class="grid grid-cols-12 gap-6">
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label class="field-label">Interest-Bearing Debt <span class="required-mark">*</span></label>
+                                            <p-inputnumber [(ngModel)]="form.interestBearingDebt" mode="decimal" inputStyleClass="w-full" [min]="0" />
+                                        </div>
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label class="field-label">Cash and Interest-Bearing Assets <span class="required-mark">*</span></label>
+                                            <p-inputnumber [(ngModel)]="form.cashAndInterestBearingAssets" mode="decimal" inputStyleClass="w-full" [min]="0" />
+                                        </div>
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label class="field-label">Total Assets or Market Cap <span class="required-mark">*</span></label>
+                                            <p-inputnumber [(ngModel)]="form.totalAssetsOrMarketCap" mode="decimal" inputStyleClass="w-full" [min]="0" />
+                                        </div>
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label class="field-label">Total Revenue <span class="required-mark">*</span></label>
+                                            <p-inputnumber [(ngModel)]="form.totalRevenue" mode="decimal" inputStyleClass="w-full" [min]="0" />
+                                        </div>
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label class="field-label">Non-Compliant Income <span class="required-mark">*</span></label>
+                                            <p-inputnumber [(ngModel)]="form.nonCompliantIncome" mode="decimal" inputStyleClass="w-full" [min]="0" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field-group">
+                                    <div class="group-title">Tatheer personalization</div>
+                                    <p class="group-copy">These values are optional. They help the backend compute user-specific tatheer instead of only returning company-level purification guidance.</p>
+
+                                    <div class="grid grid-cols-12 gap-6">
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label class="field-label">Shares Owned</label>
+                                            <p-inputnumber [(ngModel)]="form.sharesOwned" mode="decimal" inputStyleClass="w-full" [min]="0" />
+                                        </div>
+                                        <div class="col-span-12 md:col-span-6">
+                                            <label class="field-label">Invested Amount</label>
+                                            <p-inputnumber [(ngModel)]="form.investedAmount" mode="decimal" inputStyleClass="w-full" [min]="0" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (activeStep === 3) {
+                            <div class="wizard-section">
+                                <div class="wizard-heading">
+                                    <h2>Review and submit</h2>
+                                    <p>Review the exact company context and manual metrics before sending the request to the backend.</p>
+                                </div>
+
+                                <div class="grid grid-cols-12 gap-4 mb-6">
+                                    @for (item of manualReviewCards; track item.label) {
+                                        <div class="col-span-12 md:col-span-6 xl:col-span-3">
+                                            <div class="summary-card">
+                                                <div class="summary-label">{{ item.label }}</div>
+                                                <div class="summary-value">{{ item.value }}</div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="review-section mb-6">
+                                    <div class="review-section-title">Company context</div>
+                                    <div class="review-grid">
+                                        @for (item of companyReviewEntries; track item.label) {
+                                            <div class="summary-card">
+                                                <div class="summary-label">{{ item.label }} @if (item.required) { <span class="required-mark">*</span> }</div>
+                                                <div class="summary-value">{{ item.value }}</div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div class="review-block mt-4">
+                                        <div class="summary-label">Business Description</div>
+                                        <div class="review-copy">{{ businessDescriptionReview }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="review-section mb-6">
+                                    <div class="review-section-title">Financial inputs</div>
+                                    <div class="review-panel grid grid-cols-12 gap-6">
+                                        <div class="col-span-12 lg:col-span-7">
+                                            <div class="review-block h-full">
+                                                <h3>Core screening ratios</h3>
+                                                <div class="review-grid review-grid-compact">
+                                                    @for (item of coreFinancialReviewEntries; track item.label) {
+                                                        <div class="summary-card">
+                                                            <div class="summary-label">{{ item.label }}</div>
+                                                            <div class="summary-value">{{ item.value }}</div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-span-12 lg:col-span-5">
+                                            <div class="review-block h-full">
+                                                <h3>Tatheer personalization</h3>
+                                                <div class="review-grid review-grid-compact">
+                                                    @for (item of personalizationReviewEntries; track item.label) {
+                                                        <div class="summary-card">
+                                                            <div class="summary-label">{{ item.label }}</div>
+                                                            <div class="summary-value">{{ item.value }}</div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="review-panel grid grid-cols-12 gap-6">
+                                    <div class="col-span-12 lg:col-span-7">
+                                        <div class="review-block">
+                                            <h3>What happens on submit</h3>
+                                            <ul class="review-list">
+                                                <li>The backend evaluates the company activity against the current halal screen rules.</li>
+                                                <li>The five core metrics are used in the debt, cash, and non-compliant income ratios.</li>
+                                                <li>If tatheer applies, the backend returns purification guidance and a user-level amount when your holdings are present.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-12 lg:col-span-5">
+                                        <div class="review-block mode-block">
+                                            <span class="mode-label">Submission path</span>
+                                            <strong>SYNC manual screening</strong>
+                                            <small class="text-muted-color">This path returns the verdict immediately because you are providing the required ratio inputs directly.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </p-stepper>
+
+                <p-divider></p-divider>
+
+                <div class="wizard-actions">
+                    <button
+                        pButton
+                        type="button"
+                        label="Back"
+                        icon="pi pi-arrow-left"
+                        severity="secondary"
+                        [outlined]="true"
+                        [disabled]="activeStep === 1"
+                        (click)="previousStep()"
+                    ></button>
+
+                    <div class="wizard-actions-right">
+                        @if (activeStep < 3) {
+                            <button pButton type="button" label="Continue" icon="pi pi-arrow-right" iconPos="right" (click)="nextStep()"></button>
+                        } @else {
+                            <button
+                                pButton
+                                type="button"
+                                label="Submit and view verdict"
+                                icon="pi pi-send"
+                                (click)="submitManualScreening()"
+                            ></button>
+                        }
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <div class="col-span-12 xl:col-span-4">
+        <div class="card side-panel">
+            <div class="section-title">Workflow map</div>
+            <p-timeline [value]="workflowTimeline">
+                <ng-template #marker let-item>
+                    <span class="timeline-mini-marker mini-active">
+                        <i [class]="item.icon"></i>
+                    </span>
+                </ng-template>
+                <ng-template #content let-item>
+                    <div class="mini-step-copy">
+                        <div class="font-medium">{{ item.label }}</div>
+                        <small class="text-muted-color">{{ item.helper }}</small>
+                    </div>
+                </ng-template>
+            </p-timeline>
+        </div>
+
+        <div class="card side-panel">
+            <div class="section-title">What the backend already does</div>
+            <ul class="info-list">
+                <li>Runs the Sharia ratio engine and shows each rule outcome.</li>
+                <li>Produces a written explanation you can read on the dedicated result page.</li>
+                <li>Computes tatheer guidance when applicable.</li>
+                <li>Saves each run to your screening history.</li>
+            </ul>
+        </div>
+
+        <div class="card side-panel">
+            <div class="section-title">User trust notes</div>
+            <div class="trust-card">
+                <h3>Explainability stays visible</h3>
+                <p class="mb-3 text-muted-color">
+                    Mely shows the verdict, the rule trace, and plain-language explanation so you can understand the outcome before investing.
+                </p>
+                <p-tag severity="success" value="Manual path remains available"></p-tag>
+            </div>
+        </div>
+    </div>
+</div>

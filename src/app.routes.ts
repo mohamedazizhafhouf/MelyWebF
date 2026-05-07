@@ -14,6 +14,9 @@ export const appRoutes: Routes = [
         canActivateChild: [authChildGuard],
         children: [
             { path: '', component: Dashboard },
+            { path: 'halal-stocks', loadChildren: () => import('./app/pages/halal-stocks/halal-stocks.routes') },
+            { path: 'zakat', loadChildren: () => import('./app/pages/zakat/zakat.routes') },
+            { path: 'gold-prices', loadChildren: () => import('./app/pages/gold-prices/gold-prices.routes') },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }

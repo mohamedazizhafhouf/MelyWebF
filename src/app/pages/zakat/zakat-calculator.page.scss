@@ -1,0 +1,60 @@
+.zakat-page {
+    .eyebrow {
+        color: #0f766e;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .section-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+        color: var(--text-color);
+    }
+
+    .field-block label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 0.35rem;
+        color: var(--text-color-secondary);
+    }
+
+    .result-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .result-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--surface-border);
+
+        &.highlight {
+            border-bottom: none;
+            padding-top: 1rem;
+            margin-top: 0.25rem;
+            border-top: 2px solid rgba(15, 118, 110, 0.35);
+        }
+    }
+
+    .result-label {
+        font-size: 0.8rem;
+        color: var(--text-color-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .result-value {
+        font-size: 1.25rem;
+    }
+
+    .disclaimer {
+        white-space: pre-wrap;
+        line-height: 1.5;
+    }
+}

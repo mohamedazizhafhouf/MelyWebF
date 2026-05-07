@@ -1,0 +1,171 @@
+<p-toast></p-toast>
+
+<div class="grid grid-cols-12 gap-8 zakat-page">
+    <div class="col-span-12">
+        <div class="card">
+            <div class="eyebrow mb-2">Workspace</div>
+            <h1 class="text-3xl font-semibold text-surface-900 dark:text-surface-0 mb-3">Zakat estimator</h1>
+            <p class="text-muted-color leading-relaxed mb-4 max-w-4xl">
+                Enter zakatable assets and deductible debts in <strong>one currency</strong> (your choice). Niṣāb uses
+                <strong>gold</strong> weight from defaults × your gold price per gram. This is a simplified educational
+                tool—not a religious ruling. Numbers update <strong>instantly in your browser</strong> (no server round-trip).
+            </p>
+            <p-message severity="warn" styleClass="w-full">
+                <span class="font-semibold">Not a fatwa.</span>
+                Zakat depends on many details (asset types, debt timing, schools of thought). Confirm with a qualified
+                scholar or trusted charity before paying. If one lunar year (ḥawl) has not passed on your zakatable
+                wealth, you do not owe Zakat yet; the calculator still shows a hypothetical 2.5% figure for planning.
+            </p-message>
+        </div>
+    </div>
+
+    <div class="col-span-12 xl:col-span-7">
+        <div class="card">
+            <h2 class="text-xl font-semibold mb-4">Inputs</h2>
+
+            <p class="text-sm text-muted-color mb-4">
+                Reference niṣāb weights:
+                <strong>{{ defaults.goldNisabGrams }} g</strong> gold,
+                <strong>{{ defaults.silverNisabGrams }} g</strong> silver (silver not used for the threshold in this MVP).
+                Default Zakat rate: <strong>{{ (defaults.zakatRate * 100).toFixed(2) }}%</strong>.
+            </p>
+
+            <h3 class="section-title">Assets</h3>
+            <div class="grid grid-cols-12 gap-4 mb-4">
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="cash">Cash</label>
+                    <p-inputNumber inputId="cash" [(ngModel)]="cash" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="bank">Bank savings</label>
+                    <p-inputNumber inputId="bank" [(ngModel)]="bankSavings" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="recv">Receivables</label>
+                    <p-inputNumber inputId="recv" [(ngModel)]="receivables" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="trade">Trade / business goods</label>
+                    <p-inputNumber inputId="trade" [(ngModel)]="tradeGoods" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="inv">Investments (zakatable portion)</label>
+                    <p-inputNumber inputId="inv" [(ngModel)]="investmentsZakatable" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="other">Other zakatable assets</label>
+                    <p-inputNumber inputId="other" [(ngModel)]="otherAssets" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+            </div>
+
+            <h3 class="section-title">Liabilities</h3>
+            <div class="grid grid-cols-12 gap-4 mb-4">
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="debts">Deductible debts (aggregate)</label>
+                    <p-inputNumber inputId="debts" [(ngModel)]="debts" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+            </div>
+
+            <h3 class="section-title">Gold &amp; silver (optional)</h3>
+            <div class="grid grid-cols-12 gap-4 mb-4">
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="ggrams">Gold weight (grams)</label>
+                    <p-inputNumber inputId="ggrams" [(ngModel)]="goldGrams" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="3" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="sgrams">Silver weight (grams)</label>
+                    <p-inputNumber inputId="sgrams" [(ngModel)]="silverGrams" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="3" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+            </div>
+
+            <h3 class="section-title">Metal prices (optional overrides)</h3>
+            <p class="text-sm text-muted-color mb-3">
+                Leave blank to use built-in defaults (gold {{ defaults.defaultGoldPricePerGram }}, silver
+                {{ defaults.defaultSilverPricePerGram }} per gram — same as API defaults in <code>mely.zakat.*</code>).
+                Override with today’s spot price in your currency for transparency.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button pButton type="button" label="Use default prices" icon="pi pi-refresh" severity="secondary" [outlined]="true" (click)="applyDefaultMetalPrices()"></button>
+                <button pButton type="button" label="Clear overrides" icon="pi pi-times" severity="secondary" [text]="true" (click)="clearPriceOverrides()"></button>
+            </div>
+            <div class="grid grid-cols-12 gap-4 mb-4">
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="gprice">Gold price / gram</label>
+                    <p-inputNumber inputId="gprice" [(ngModel)]="goldPricePerGram" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="4" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+                <div class="col-span-12 md:col-span-6 field-block">
+                    <label for="sprice">Silver price / gram</label>
+                    <p-inputNumber inputId="sprice" [(ngModel)]="silverPricePerGram" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="4" [min]="0" class="w-full" styleClass="w-full"></p-inputNumber>
+                </div>
+            </div>
+
+            <p-divider></p-divider>
+
+            <div class="flex flex-column gap-3 mb-4">
+                <div class="flex align-items-center gap-2">
+                    <p-checkbox inputId="hawl" [(ngModel)]="hawlAcknowledged" [binary]="true"></p-checkbox>
+                    <label for="hawl" class="m-0 cursor-pointer">I confirm that one lunar year (ḥawl) has passed on this zakatable wealth.</label>
+                </div>
+            </div>
+
+            <button pButton type="button" label="Calculate" icon="pi pi-calculator" (click)="calculate()"></button>
+        </div>
+    </div>
+
+    <div class="col-span-12 xl:col-span-5">
+        <div class="card h-full">
+            <h2 class="text-xl font-semibold mb-4">Result</h2>
+
+            @if (!result) {
+                <p class="text-muted-color">Click Calculate to see net zakatable wealth, niṣāb, and amounts.</p>
+            }
+
+            @if (result) {
+                @for (w of result.warnings; track w) {
+                    <p-message severity="warn" styleClass="w-full mb-3">{{ w }}</p-message>
+                }
+
+                <div class="result-grid mb-4">
+                    <div class="result-item">
+                        <span class="result-label">Net zakatable</span>
+                        <strong class="result-value">{{ result.netZakatable | number : '1.2-2' }}</strong>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Niṣāb threshold</span>
+                        <strong class="result-value">{{ result.nisabThreshold | number : '1.2-2' }}</strong>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Meets niṣāb</span>
+                        <p-tag [severity]="result.meetsNisab ? 'success' : 'secondary'" [value]="result.meetsNisab ? 'Yes' : 'No'"></p-tag>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Hypothetical 2.5%</span>
+                        <strong class="result-value">{{ result.hypotheticalZakat | number : '1.2-2' }}</strong>
+                    </div>
+                    <div class="result-item highlight">
+                        <span class="result-label">Zakat due (if ḥawl confirmed &amp; niṣāb met)</span>
+                        <strong class="result-value text-primary">{{ result.zakatDue | number : '1.2-2' }}</strong>
+                    </div>
+                </div>
+
+                <p-table [value]="result.breakdown" styleClass="p-datatable-sm" [tableStyle]="{ 'min-width': '100%' }">
+                    <ng-template #header>
+                        <tr>
+                            <th>Line</th>
+                            <th class="text-right">Amount</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-row>
+                        <tr>
+                            <td>{{ row.label }}</td>
+                            <td class="text-right">{{ row.amount | number : '1.2-2' }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+                <p-divider></p-divider>
+                <p class="text-sm text-muted-color disclaimer">{{ result.disclaimer }}</p>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,164 @@
+<p-toast></p-toast>
+
+<div class="result-container">
+    @if (error && !result) {
+        <div class="error-container">
+            <i class="pi pi-exclamation-circle error-icon"></i>
+            <h3>Something went wrong</h3>
+            <p>{{ error }}</p>
+            <div class="action-buttons">
+                <p-button label="Try Again" (onClick)="backToNew()" [outlined]="true"></p-button>
+                <p-button label="View History" (onClick)="viewHistory()"></p-button>
+            </div>
+        </div>
+    } @else if (result) {
+        <div class="result-eyebrow">Halal screening result</div>
+
+        <div class="result-header">
+            <div class="header-info">
+                <h1>{{ companyName }}</h1>
+                @if (ticker) {
+                    <p-chip [label]="ticker" [style]="{ background: 'var(--p-surface-200)', color: 'var(--p-text-color)' }"></p-chip>
+                }
+            </div>
+            <div class="header-actions">
+                <p-button label="New Screening" icon="pi pi-plus" (onClick)="backToNew()" [outlined]="true" size="small"></p-button>
+                <p-button label="History" icon="pi pi-history" (onClick)="viewHistory()" [outlined]="true" size="small"></p-button>
+            </div>
+        </div>
+
+        <p-divider></p-divider>
+
+        <div class="verdict-section">
+            <div class="verdict-card" [class]="'verdict-' + verdict">
+                <div class="verdict-icon">
+                    @switch (verdict) {
+                        @case ('HALAL') {
+                            <i class="pi pi-check-circle"></i>
+                        }
+                        @case ('NON_HALAL') {
+                            <i class="pi pi-times-circle"></i>
+                        }
+                        @case ('REVIEW_REQUIRED') {
+                            <i class="pi pi-exclamation-triangle"></i>
+                        }
+                        @default {
+                            <i class="pi pi-clock"></i>
+                        }
+                    }
+                </div>
+                <div class="verdict-content">
+                    <p class="verdict-kicker">Verdict</p>
+                    <p-tag [value]="verdictLabel" [severity]="verdictSeverity" [style]="{ fontSize: '1.25rem', padding: '0.5rem 1rem' }"></p-tag>
+                    @if (result.userMessage) {
+                        <p class="verdict-summary">{{ result.userMessage }}</p>
+                    }
+                    <p class="verdict-meta">Completed {{ formatDate(completedAt) }}</p>
+                </div>
+            </div>
+        </div>
+
+        @if (warnings.length > 0) {
+            <div class="warnings-section">
+                <p class="section-title">Warnings</p>
+                @for (warning of warnings; track warning) {
+                    <div class="warning-item">
+                        <i class="pi pi-exclamation-triangle"></i>
+                        <span>{{ warning }}</span>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (explanation) {
+            <div class="explanation-section">
+                <p class="section-title">Detailed explanation</p>
+                <p-card>
+                    <div class="explanation-body">{{ explanation }}</div>
+                </p-card>
+            </div>
+        }
+
+        @if (activitySummary) {
+            <div class="activity-section">
+                <p class="section-title">Activity analysis</p>
+                <p-card>
+                    <div class="activity-body">{{ activitySummary }}</div>
+                </p-card>
+            </div>
+        }
+
+        @if (needsTatheer) {
+            <div class="tatheer-section">
+                <p class="section-title">Tatheer (purification)</p>
+                <p-card>
+                    <div class="tatheer-grid">
+                        <div class="tatheer-item">
+                            <span class="label">Purification amount</span>
+                            <span class="value">{{ formatCurrency(tatheerAmount) }}</span>
+                        </div>
+                        <div class="tatheer-item">
+                            <span class="label">Purification ratio</span>
+                            <span class="value">{{ formatPercentage(purificationRatio) }}</span>
+                        </div>
+                        @if (purificationPerShare !== null) {
+                            <div class="tatheer-item">
+                                <span class="label">Per share</span>
+                                <span class="value">{{ formatCurrency(purificationPerShare) }}</span>
+                            </div>
+                        }
+                    </div>
+                </p-card>
+            </div>
+        }
+
+        @if (ruleResults.length > 0) {
+            <div class="rules-section">
+                <p class="section-title">Rule-by-rule results</p>
+                <div class="rules-list">
+                    @for (rule of ruleResults; track rule.ruleCode) {
+                        <p-card styleClass="rule-card">
+                            <div class="rule-item">
+                                <div class="rule-status">
+                                    @if (rule.passed === true) {
+                                        <i class="pi pi-check-circle passed"></i>
+                                    } @else if (rule.passed === false) {
+                                        <i class="pi pi-times-circle failed"></i>
+                                    } @else {
+                                        <i class="pi pi-minus-circle pending"></i>
+                                    }
+                                </div>
+                                <div class="rule-details">
+                                    <p class="rule-name">{{ rule.label }}</p>
+                                    <p class="rule-description">{{ rule.message }}</p>
+                                    <div class="rule-metrics">
+                                        <p-chip [label]="rule.status" [style]="{ fontSize: '0.8rem' }"></p-chip>
+                                    </div>
+                                </div>
+                            </div>
+                        </p-card>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (metricsUsed.length > 0) {
+            <div class="metrics-section">
+                <p class="section-title">Financial metrics used</p>
+                <div class="metrics-grid">
+                    @for (entry of metricsUsed; track entry.key) {
+                        <p-card styleClass="metric-card">
+                            <div class="metric-item">
+                                <p class="metric-label">{{ entry.label }}</p>
+                                <p class="metric-value">{{ formatValue(entry.metric.value) }}</p>
+                                @if (entry.metric.source) {
+                                    <p class="metric-source">Source: {{ entry.metric.source }}</p>
+                                }
+                            </div>
+                        </p-card>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
