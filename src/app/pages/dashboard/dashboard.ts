@@ -5,6 +5,7 @@ import { MelyWealthHubWidget } from './components/mely-wealth-hub.widget';
 import { MelyZakatWidget } from './components/mely-zakat.widget';
 import { MelyHowItWorksWidget } from './components/mely-how-it-works.widget';
 import { MelyScreeningActivityWidget } from './components/mely-screening-activity.widget';
+import { MelyCoachWidget } from './components/mely-coach.widget';
 
 @Component({
     selector: 'app-dashboard',
@@ -13,6 +14,7 @@ import { MelyScreeningActivityWidget } from './components/mely-screening-activit
         MelyWealthHubWidget,
         MelyZakatWidget,
         MelyScreeningActivityWidget,
+        MelyCoachWidget,
         MelyGuidanceWidget,
         MelyHowItWorksWidget
     ],
@@ -22,6 +24,7 @@ import { MelyScreeningActivityWidget } from './components/mely-screening-activit
             <app-mely-wealth-hub-widget class="contents" />
             <app-mely-zakat-widget class="contents" />
             <app-mely-screening-activity-widget class="contents" />
+            <app-mely-coach-widget class="contents" />
             <app-mely-guidance-widget class="contents" />
             <app-mely-how-it-works-widget class="contents" />
         </div>

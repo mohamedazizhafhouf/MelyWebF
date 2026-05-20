@@ -1,0 +1,233 @@
+.coach-page {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.coach-toolbar {
+    align-items: center;
+    background: color-mix(in srgb, var(--surface-card) 92%, var(--primary-color));
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    padding: 1.5rem;
+}
+
+.coach-eyebrow {
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+}
+
+.coach-toolbar h1 {
+    font-size: 1.9rem;
+    margin: 0;
+}
+
+.coach-month {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.coach-month span {
+    color: var(--text-color-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.coach-month input {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    color: var(--text-color);
+    padding: 0.65rem 0.8rem;
+}
+
+.coach-layout {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: minmax(18rem, 0.42fr) minmax(0, 1fr);
+}
+
+.coach-insights,
+.coach-chat {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+}
+
+.coach-insights {
+    align-self: start;
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.score-panel {
+    align-items: baseline;
+    border-radius: 8px;
+    display: flex;
+    gap: 0.35rem;
+    min-height: 8rem;
+    padding: 1.25rem;
+}
+
+.score-panel span,
+.score-panel small {
+    color: color-mix(in srgb, white 78%, transparent);
+}
+
+.score-panel strong {
+    color: white;
+    font-size: 3.3rem;
+    line-height: 1;
+}
+
+.score-strong {
+    background: linear-gradient(135deg, #047857, #0f766e);
+}
+
+.score-steady {
+    background: linear-gradient(135deg, #0369a1, #0f766e);
+}
+
+.score-attention {
+    background: linear-gradient(135deg, #b45309, #9f1239);
+}
+
+.summary-panel,
+.insight-card {
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.summary-panel h2,
+.chat-header h2,
+.insight-card h3 {
+    margin: 0;
+}
+
+.summary-panel p,
+.insight-card p,
+.chat-header p,
+.empty-chat p {
+    color: var(--text-color-secondary);
+    line-height: 1.55;
+}
+
+.insight-stack {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.insight-card__head {
+    align-items: center;
+    color: var(--text-color-secondary);
+    display: flex;
+    font-size: 0.75rem;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.coach-chat {
+    display: flex;
+    flex-direction: column;
+    min-height: 42rem;
+    padding: 1rem;
+}
+
+.chat-header {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.message-list {
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.9rem;
+    min-height: 26rem;
+    overflow: auto;
+    padding: 1rem;
+}
+
+.message-row {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.message-row.user {
+    justify-content: flex-end;
+}
+
+.message-bubble {
+    background: var(--surface-ground);
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    max-width: min(42rem, 82%);
+    padding: 0.85rem 1rem;
+}
+
+.message-row.user .message-bubble {
+    background: color-mix(in srgb, var(--primary-color) 12%, var(--surface-card));
+}
+
+.message-meta {
+    align-items: center;
+    color: var(--text-color-secondary);
+    display: flex;
+    font-size: 0.78rem;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
+.message-bubble p {
+    line-height: 1.55;
+    margin: 0;
+    white-space: pre-line;
+}
+
+.empty-chat {
+    margin: auto;
+    max-width: 28rem;
+    text-align: center;
+}
+
+.composer {
+    align-items: flex-end;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: 1fr auto;
+}
+
+.composer textarea {
+    resize: vertical;
+    width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .coach-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .coach-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

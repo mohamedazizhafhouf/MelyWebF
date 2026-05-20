@@ -1,0 +1,114 @@
+<p-toast />
+
+<div class="coach-page">
+    <section class="coach-toolbar">
+        <div>
+            <p class="coach-eyebrow">Mely AI Coach</p>
+            <h1>Islamic finance guidance grounded in your money data</h1>
+        </div>
+        <div class="coach-month">
+            <span>Month</span>
+            <input type="month" [ngModel]="yearMonth()" (ngModelChange)="onMonthChange($event)" />
+        </div>
+    </section>
+
+    <section class="coach-layout">
+        <aside class="coach-insights">
+            <div class="score-panel" [ngClass]="'score-' + scoreTone()">
+                @if (loadingInsights()) {
+                    <p-progressSpinner strokeWidth="4" />
+                } @else {
+                    <span>Financial health</span>
+                    <strong>{{ insights()?.healthScore ?? 0 }}</strong>
+                    <small>/ 100</small>
+                }
+            </div>
+
+            <div class="summary-panel">
+                <h2>Monthly readout</h2>
+                <p>{{ insights()?.summary ?? 'Add transactions, budgets, goals, and zakat assets so Mely can coach this month.' }}</p>
+                <button pButton type="button" icon="pi pi-refresh" label="Refresh" severity="secondary" [outlined]="true" (click)="refreshInsights()" [loading]="loadingInsights()"></button>
+            </div>
+
+            <div class="insight-stack">
+                @for (card of insights()?.cards ?? []; track card.title) {
+                    <article class="insight-card">
+                        <div class="insight-card__head">
+                            <p-tag [severity]="severity(card)" [value]="card.severity" />
+                            <span>{{ card.type }}</span>
+                        </div>
+                        <h3>{{ card.title }}</h3>
+                        <p>{{ card.message }}</p>
+                        @if (card.actionRoute) {
+                            <a pButton [routerLink]="card.actionRoute" [label]="card.actionLabel || 'Open'" icon="pi pi-arrow-right" iconPos="right" size="small" [text]="true"></a>
+                        }
+                    </article>
+                } @empty {
+                    <article class="insight-card">
+                        <div class="insight-card__head">
+                            <p-tag severity="info" value="INFO" />
+                            <span>ONBOARDING</span>
+                        </div>
+                        <h3>Start with your financial picture</h3>
+                        <p>Add a few transactions, budgets, goals, and zakat assets. The coach becomes sharper as your data becomes richer.</p>
+                        <a pButton routerLink="/wealth" label="Open wealth hub" icon="pi pi-arrow-right" iconPos="right" size="small" [text]="true"></a>
+                    </article>
+                }
+            </div>
+        </aside>
+
+        <main class="coach-chat">
+            <div class="chat-header">
+                <div class="flex items-center gap-3">
+                    <p-avatar label="M" shape="circle" styleClass="coach-avatar" />
+                    <div>
+                        <h2>Mely coach</h2>
+                        <p>Budgeting, zakat, hawl, savings, and halal investing.</p>
+                    </div>
+                </div>
+                <p-tag severity="success" value="Educational guidance" />
+            </div>
+
+            <div class="suggestions">
+                @for (item of suggestions; track item) {
+                    <button pButton type="button" [label]="item" severity="secondary" [outlined]="true" size="small" (click)="ask(item)"></button>
+                }
+            </div>
+
+            <div class="message-list">
+                @for (message of chatMessages(); track message.id) {
+                    <div class="message-row" [ngClass]="message.role === 'ASSISTANT' ? 'assistant' : 'user'">
+                        @if (message.role === 'ASSISTANT') {
+                            <p-avatar label="M" shape="circle" styleClass="message-avatar" />
+                        }
+                        <div class="message-bubble">
+                            <div class="message-meta">
+                                <span>{{ message.role === 'ASSISTANT' ? 'Mely' : 'You' }}</span>
+                                <small>{{ formatTime(message.createdAt) }}</small>
+                            </div>
+                            <p>{{ message.content }}</p>
+                        </div>
+                    </div>
+                } @empty {
+                    <div class="empty-chat">
+                        <h3>Ask for guidance on this month</h3>
+                        <p>The coach uses your private Mely data to answer with Islamic finance guardrails.</p>
+                    </div>
+                }
+            </div>
+
+            <p-divider />
+
+            <div class="composer">
+                <textarea
+                    pTextarea
+                    rows="3"
+                    [ngModel]="prompt()"
+                    (ngModelChange)="prompt.set($event)"
+                    placeholder="Ask about budgets, zakat readiness, hawl, savings goals, or halal investing."
+                ></textarea>
+                <button pButton type="button" icon="pi pi-send" [label]="sending() ? 'Sending...' : 'Send'" (click)="ask()" [disabled]="sending() || !prompt().trim()"></button>
+            </div>
+        </main>
+    </section>
+</div>
